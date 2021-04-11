@@ -9,11 +9,22 @@ import digital.serpiente.util.microservice.geo.dto.Location;
 
 public abstract class GridLocatorUtil {
 
-    public static double distanceTo(Location startLatLon, Location endLatLon, String unit) {
+    private static final String REGEX_GRIDLOCATOR_1 = "([a-rA-R]{2})";
+    private static final String REGEX_GRIDLOCATOR_2 = "([a-rA-R]{2}[0-9]{2})";
+    private static final String REGEX_GRIDLOCATOR_3 = "([a-rA-R]{2}[0-9]{2}[a-xA-X]{2})";
+    private static final String REGEX_GRIDLOCATOR_4 = "([a-rA-R]{2}[0-9]{2}[a-xA-X]{2}[0-9]{2})";
+    private static final String REGEX_GRIDLOCATOR_5 = "([a-rA-R]{2}[0-9]{2}[a-xA-X]{2}[0-9]{2}[a-xA-X]{2})";
+    private static final String REGEX_GRIDLOCATOR_L = "^(" + REGEX_GRIDLOCATOR_1 + "|" + REGEX_GRIDLOCATOR_2 + "|"
+            + REGEX_GRIDLOCATOR_3 + "|" + REGEX_GRIDLOCATOR_4 + "|" + REGEX_GRIDLOCATOR_5 + ")$";
+
+    private GridLocatorUtil() {
+        // NO CALL
+    }
+
+    public static double distanceTo(Location startLatLon, Location endLatLon, Units unit) {
         int r = 6371;
 
-        switch (unit) {
-        case "m":
+        if (unit.equals(Units.M)) {
             r *= 1000;
         }
 
@@ -47,11 +58,11 @@ public abstract class GridLocatorUtil {
 
         locator = padLocator(locator);
 
-        ubicacion = convertPartToLatlon(0, 1, locator, ubicacion);
-        ubicacion = convertPartToLatlon(1, 10, locator, ubicacion);
-        ubicacion = convertPartToLatlon(2, 10 * 24, locator, ubicacion);
-        ubicacion = convertPartToLatlon(3, 10 * 24 * 10, locator, ubicacion);
-        ubicacion = convertPartToLatlon(4, 10 * 24 * 10 * 24, locator, ubicacion);
+        convertPartToLatlon(0, 1, locator, ubicacion);
+        convertPartToLatlon(1, 10, locator, ubicacion);
+        convertPartToLatlon(2, 10 * 24, locator, ubicacion);
+        convertPartToLatlon(3, 10 * 24 * 10, locator, ubicacion);
+        convertPartToLatlon(4, 10 * 24 * 10 * 24, locator, ubicacion);
 
         ubicacion.setGoogleMapsLink(
                 String.format("https://maps.google.com/?q=%s,%s", ubicacion.getLat(), ubicacion.getLon()));
@@ -59,7 +70,7 @@ public abstract class GridLocatorUtil {
         return ubicacion;
     }
 
-    private static Location convertPartToLatlon(int counter, int divisor, String locator, Location ubicacion) {
+    private static void convertPartToLatlon(int counter, int divisor, String locator, Location ubicacion) {
         String gridLon = locator.substring(counter * 2, counter * 2 + 1);
         String gridLat = locator.substring(counter * 2 + 1, counter * 2 + 1 + 1);
 
@@ -71,7 +82,6 @@ public abstract class GridLocatorUtil {
 
         ubicacion.setLat(ubicacion.getLat().add(x));
         ubicacion.setLon(ubicacion.getLon().add(y));
-        return ubicacion;
     }
 
     private static int l2n(String letter) {
@@ -79,7 +89,7 @@ public abstract class GridLocatorUtil {
         Pattern p = Pattern.compile("[0-9]+");
         Matcher m = p.matcher(letter);
         if (m.matches()) {
-            return Integer.valueOf(letter).intValue();
+            return Integer.parseInt(letter);
         } else {
             return letter.charAt(0) - 97;
         }
@@ -87,25 +97,24 @@ public abstract class GridLocatorUtil {
 
     private static String padLocator(String locator) {
         int length = locator.length() / 2;
-
+        StringBuilder sb = new StringBuilder(locator);
         while (length < 5) {
             if ((length % 2) == 1) {
-                locator += "55";
+                sb.append("55");
             } else {
-                locator += "LL";
+                sb.append("LL");
             }
 
-            length = locator.length() / 2;
+            length = sb.toString().length() / 2;
         }
-        return locator;
+        return sb.toString();
     }
 
     public static boolean isValidateGridLocator(String gridLocator) {
         if (gridLocator == null || gridLocator.length() <= 0) {
             return false;
         }
-        String regex = "^(([a-rA-R]{2})|([a-rA-R]{2}[0-9]{2})|([a-rA-R]{2}[0-9]{2}[a-xA-X]{2})|([a-rA-R]{2}[0-9]{2}[a-xA-X]{2}[0-9]{2})|([a-rA-R]{2}[0-9]{2}[a-xA-X]{2}[0-9]{2}[a-xA-X]{2}))$";
-        Pattern p = Pattern.compile(regex);
+        Pattern p = Pattern.compile(REGEX_GRIDLOCATOR_L);
         Matcher m = p.matcher(gridLocator);
         return m.matches();
     }

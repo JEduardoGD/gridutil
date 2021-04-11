@@ -8,6 +8,7 @@ import digital.serpiente.util.microservice.geo.dto.Location;
 import digital.serpiente.util.microservice.geo.dto.Response;
 import digital.serpiente.util.microservice.geo.service.IGeoService;
 import digital.serpiente.util.microservice.geo.util.GridLocatorUtil;
+import digital.serpiente.util.microservice.geo.util.Units;
 
 @Service
 public class GeoServiceImpl implements IGeoService {
@@ -31,7 +32,7 @@ public class GeoServiceImpl implements IGeoService {
         }
         Location ubicacionA = GridLocatorUtil.locatorToLocation(locatorA);
         Location ubicacionB = GridLocatorUtil.locatorToLocation(locatorB);
-        double distance = GridLocatorUtil.distanceTo(ubicacionA, ubicacionB, "km");
+        double distance = GridLocatorUtil.distanceTo(ubicacionA, ubicacionB, Units.KM);
 
         response.setDistance(new DecimalFormat("#0.00").format(distance));
         response.setLocationA(ubicacionA);
