@@ -22,4 +22,6 @@ java -jar target/geo-1.0.0.jar
 ## Testing
 make a GET petition to http://localhost:8080/measuredistance/GRIDLOCATOR1/and/GRIDLOCATOR2
 
-be sure your GRIDLOCATOR 1 and 2 have Maidenhead up to 10 position
+be sure your GRIDLOCATOR 1 and 2 have the Maidenhead up to 10 position
+
+feel free of make suggestions and pull request to improve this code.
