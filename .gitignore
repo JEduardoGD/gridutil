@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+#ADDED
+.attach_pid*
+properties.env
