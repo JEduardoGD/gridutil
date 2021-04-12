@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import digital.serpiente.util.microservice.geo.dto.Location;
@@ -23,6 +24,16 @@ import software.amazon.awssdk.services.location.model.SearchPlaceIndexForPositio
 @Service
 public class GeoServiceImpl implements IGeoService {
     private static final String NOT_VALID_GRID_LOCATOR = "grid locator no valido";
+    
+    @Value("${aws.access.key.id}")
+    private String awsAccessKeyId;
+    
+    @Value("${aws.access.key.secret}")
+    private String awsAccessKeySecret;
+    
+    @Value("${aws.location.indexname}")
+    private String awsLocationndexname;
+
 
     @Override
     public Response measureDistance(String locatorA, String locatorB) {
@@ -78,12 +89,11 @@ public class GeoServiceImpl implements IGeoService {
 
     @Override
     public String getRegionOfLocation(Location location) {
-        LocationClient awsLocationClient = AwsClientBuilder.createAmzRouteS3Client("AKIAWAWN2BEHYJB475VY",
-                "puqRCXR9aXmyyJooKBbD4IgYNE3jZi4dq1CqwVnJ");
+        LocationClient awsLocationClient = AwsClientBuilder.createAmzRouteS3Client(awsAccessKeySecret, awsAccessKeyId);
         Builder builder = SearchPlaceIndexForPositionRequest.builder();
         List<Double> position = Arrays.asList(location.getLon().doubleValue(), location.getLat().doubleValue());
         builder.position(position);
-        builder.indexName("testplaceindex");
+        builder.indexName(awsLocationndexname);
         builder.maxResults(20);
         SearchPlaceIndexForPositionRequest x = builder.build();
         SearchPlaceIndexForPositionResponse response = awsLocationClient.searchPlaceIndexForPosition(x);
