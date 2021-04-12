@@ -10,4 +10,6 @@ public class Location {
     private BigDecimal lat;
     private BigDecimal lon;
     private String googleMapsLink;
+    private String region;
+    private String error;
 }

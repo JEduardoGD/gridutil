@@ -7,5 +7,4 @@ public class Response {
     private Location locationA;
     private Location locationB;
     private String distance;
-    private String error;
 }
