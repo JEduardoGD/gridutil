@@ -1,0 +1,7 @@
+version: '2'
+ 
+services:
+  gridlocator:
+    image: gridlocator
+    ports:
+      - "8080:8080"
