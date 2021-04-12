@@ -89,19 +89,26 @@ public class GeoServiceImpl implements IGeoService {
 
     @Override
     public String getRegionOfLocation(Location location) {
-        LocationClient awsLocationClient = AwsClientBuilder.createAmzRouteS3Client(awsAccessKeySecret, awsAccessKeyId);
-        Builder builder = SearchPlaceIndexForPositionRequest.builder();
-        List<Double> position = Arrays.asList(location.getLon().doubleValue(), location.getLat().doubleValue());
-        builder.position(position);
-        builder.indexName(awsLocationndexname);
-        builder.maxResults(20);
-        SearchPlaceIndexForPositionRequest x = builder.build();
-        SearchPlaceIndexForPositionResponse response = awsLocationClient.searchPlaceIndexForPosition(x);
-        List<Place> places = response.results().stream().map(SearchForPositionResult::place)
-                .collect(Collectors.toList());
-        if (places != null && !places.isEmpty()) {
-            Place place = places.get(0);
-            return String.format("%s/%s", place.country(), place.region());
+        LocationClient awsLocationClient = null;
+        try {
+            awsLocationClient = AwsClientBuilder.createAmzRouteS3Client(awsAccessKeySecret, awsAccessKeyId);
+            Builder builder = SearchPlaceIndexForPositionRequest.builder();
+            List<Double> position = Arrays.asList(location.getLon().doubleValue(), location.getLat().doubleValue());
+            builder.position(position);
+            builder.indexName(awsLocationndexname);
+            builder.maxResults(20);
+            SearchPlaceIndexForPositionRequest x = builder.build();
+            SearchPlaceIndexForPositionResponse response = awsLocationClient.searchPlaceIndexForPosition(x);
+            List<Place> places = response.results().stream().map(SearchForPositionResult::place)
+                    .collect(Collectors.toList());
+            if (places != null && !places.isEmpty()) {
+                Place place = places.get(0);
+                return String.format("%s/%s", place.country(), place.region());
+            }
+        } finally {
+            if (awsLocationClient != null) {
+                awsLocationClient.close();
+            }
         }
         return null;
     }
