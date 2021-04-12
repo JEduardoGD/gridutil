@@ -31,7 +31,11 @@ maven sonar.sonar
 
 
 ## Testing
+### Measure between 2 grid locators
 make a GET petition to http://localhost:8080/measuredistance/GRIDLOCATOR1/and/GRIDLOCATOR2
+
+### Getting info of a grid locator
+make a GET petition to http://localhost:8080/getregionof/GRIDLOCATOR1
 
 be sure your GRIDLOCATOR 1 and 2 have the Maidenhead up to 10 position
 
@@ -43,21 +47,12 @@ docker build -t gridlocator .
 ```
 ### Creating container and run
 ```bash
-docker run -p 8080:8080 gridlocator
+docker run    -p 8080:8080 --env-file=./properties.env gridlocator
 ```
-
-## Running on docker-compose
-Important: you first have to make the docker image
+### Creating container and run as daemon
 ```bash
-docker-compose up
+docker run -d -p 8080:8080 --env-file=./properties.env gridlocator
 ```
-
-Running as daemon
-```bash
-docker-compose up -d
-```
-
 
 # Thanks
-
-feel free of make suggestions and pull request to improve this code.
+feel free of make suggestions and qestions to improve this code at eduardo_gd@hotmail.com
